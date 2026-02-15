@@ -1,0 +1,19 @@
+{
+  "name": "@openclaw/xmpp",
+  "version": "2026.2.15",
+  "description": "OpenClaw XMPP channel plugin",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "@xmpp/client": "^0.13.1",
+    "@xmpp/jid": "^0.13.1",
+    "@xmpp/xml": "^0.13.1"
+  },
+  "devDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "openclaw": {
+    "extensions": ["./index.ts"]
+  }
+}

@@ -303,6 +303,73 @@ const DOCKS: Record<ChatChannelId, ChannelDock> = {
       },
     },
   },
+  xmpp: {
+    id: "xmpp",
+    capabilities: {
+      chatTypes: ["direct", "group"],
+      media: true,
+      blockStreaming: true,
+    },
+    outbound: { textChunkLimit: 4000 },
+    streaming: {
+      blockStreamingCoalesceDefaults: { minChars: 300, idleMs: 1000 },
+    },
+    config: {
+      resolveAllowFrom: ({ cfg, accountId }) => {
+        const channel = cfg.channels?.xmpp as Record<string, unknown> | undefined;
+        const normalized = normalizeAccountId(accountId);
+        const accounts = (channel?.accounts ?? {}) as Record<string, Record<string, unknown>>;
+        const account =
+          accounts[normalized] ??
+          accounts[
+            Object.keys(accounts).find(
+              (key) => key.toLowerCase() === normalized.toLowerCase(),
+            ) ?? ""
+          ];
+        const raw = (account?.allowFrom ?? channel?.allowFrom ?? []) as string[];
+        return raw.map((entry) => String(entry));
+      },
+      formatAllowFrom: ({ allowFrom }) =>
+        allowFrom
+          .map((entry) => String(entry).trim())
+          .filter(Boolean)
+          .map((entry) =>
+            entry
+              .replace(/^xmpp:/i, "")
+              .replace(/^user:/i, "")
+              .toLowerCase(),
+          ),
+    },
+    groups: {
+      resolveRequireMention: ({ cfg, accountId, groupId }) => {
+        if (!groupId) {
+          return true;
+        }
+        return resolveChannelGroupRequireMention({
+          cfg,
+          channel: "xmpp",
+          groupId,
+          accountId,
+          groupIdCaseInsensitive: true,
+        });
+      },
+      resolveToolPolicy: ({ cfg, accountId, groupId, senderId, senderName, senderUsername }) => {
+        if (!groupId) {
+          return undefined;
+        }
+        return resolveChannelGroupToolsPolicy({
+          cfg,
+          channel: "xmpp",
+          groupId,
+          accountId,
+          groupIdCaseInsensitive: true,
+          senderId,
+          senderName,
+          senderUsername,
+        });
+      },
+    },
+  },
   googlechat: {
     id: "googlechat",
     capabilities: {

@@ -1,0 +1,30 @@
+# Simplified Docker Compose - Just Prosody
+# Run OpenClaw locally for easier debugging
+
+version: '3.8'
+
+services:
+  prosody:
+    image: docker.io/prosody/prosody:latest
+    container_name: openclaw-prosody
+    ports:
+      - "5222:5222"   # Client-to-server (C2S)
+      - "5269:5269"   # Server-to-server (S2S)
+      - "5280:5280"   # HTTP (for BOSH, WebSocket, file upload)
+    volumes:
+      - prosody-data:/var/lib/prosody
+      - ./prosody.cfg.lua:/etc/prosody/prosody.cfg.lua:ro
+    environment:
+      - LOCAL=localhost
+      - DOMAIN=localhost
+      - ADMINS=admin@localhost
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5222"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  prosody-data:
+    driver: local

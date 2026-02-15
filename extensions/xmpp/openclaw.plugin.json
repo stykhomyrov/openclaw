@@ -1,0 +1,12 @@
+{
+  "id": "xmpp",
+  "name": "XMPP",
+  "description": "XMPP (Jabber) channel plugin with MUC support",
+  "version": "1.0.0",
+  "channels": ["xmpp"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
